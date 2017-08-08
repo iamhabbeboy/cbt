@@ -1,0 +1,18 @@
+<IfModule mod_rewrite.c>
+	Options +FollowSymLinks
+	Options +Indexes
+	RewriteEngine On
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^course/?$ cbtUI/UIDesign/confirm-course.php
+	RewriteRule ^course/(\w+)/?$ cbtUI/UIDesign/confirm-course.php?subject=$1 [L]
+	RewriteRule ^start/?$ cbtUI/UIDesign/start.php
+	RewriteRule ^start/([^/]+)/?$ cbtUI/UIDesign/start.php?subject=$1 [L]
+	RewriteRule ^start/([^/]+)/(\w+)?$ cbtUI/UIDesign/start.php?subject=$1&page=$2
+	RewriteRule ^start-ie/([^/]+)/?$ cbtUI/UIDesign/start-bk.php?subject=$1 [L]
+	RewriteRule ^start-ie/([^/]+)/(\w+)?$ cbtUI/UIDesign/start-bk.php?subject=$1&page=$2
+	RewriteRule ^time/?$ cbtUI/UIDesign/confirm-time.php
+	RewriteRule ^index.php?$ index.php?page=login
+    RewriteRule ^sign-out/?$ index.php?action=sign-out
+    RewriteRule ^completed/?$ index.php?action=completed
+</IfModule>

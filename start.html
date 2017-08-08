@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+
+        <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
+        Remove this if you use the .htaccess -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+        <meta name="description" content="">
+        <meta name="author" content="MegaFuse Technologies">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="icon" href="/logo.ico">
+
+       
+        <title>Login</title>
+
+      
+        <link rel="stylesheet" href="styles/css/css/vendor/bootstrap.min.css">
+        <link rel="stylesheet" href="styles/css/signin.css"/>
+        <link rel="stylesheet" href="styles/css/css/font-awesome.min.css"/>
+        <link rel="stylesheet" href="styles/css/animate.css"/>
+        <link rel="stylesheet" href="styles/css/main.css"/>
+        <link rel="stylesheet" href="styles/css/bootstrap-theme.min.css"/>
+        <link rel="stylesheet" href="styles/css/bootflat.min.css"/> 
+        <script src="javascript/jquery.js"></script>
+        <script src="javascript/Framework.js"></script>
+        <script src="javascript/app.js"></script>
+        <script src="javascript/Framework1.js"></script>
+        <!-- Replace favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
+        <!--<link rel="shortcut icon" href="images/Megafuse1.ico">
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png">-->
+    </head>
+<style>
+    #error{display: none;}
+</style>
+<body>
+ <script src="javascript/Countdown_class.js"></script>
+
+<script>
+
+ /*
+   This Countdown JS class
+   accept one parameter as object with the following keys
+   time: time for countdown{'00:10:00'}, hours: display hours here by id'', minutes: '', second:'', url: url to end quiz if time is up 'url.php'}
+ */
+ var notification = document.querySelector('#notify');
+  var Countdown_class = new Countdown({
+   user: "<?php print $matric ?>",
+   time : "<?php print $cd ?>",
+   hours: 'hh', minutes: 'mm',
+   seconds: 'ss',
+   ajax: 'ajax_time.php'
+  });
+
+    $(function () {
+
+     var ajax_xhr = function() {
+         var xhr = new XMLHttpRequest();
+         xhr.open('GET', 'data.json', false );
+         xhr.send(null);
+         var call = xhr.responseText;
+         var json = JSON.parse(call);
+         return json.length -1;
+     };
+
+
+     var _p = '', d = ajax_xhr(), _view = $('#current-page').val();
+            var func = function() {
+
+                    var xhr = new XMLHttpRequest();
+                     xhr.open('GET', '<?php print LAYOUT ?>/json_answer.php', false );
+                     xhr.send(null);
+                     var call = xhr.responseText;
+                     return JSON.parse(call);
+            }
+
+            /*
+             * <!-- this wrap code handle close button event
+             */
+
+            $('.clickx').click(function() {
+
+ 				$('#notify').addClass('flipOutX');
+            });
+
+
+        $('.btn-block').click(function (e) {
+                    e.preventDefault();
+                    var data_attr = $(this).attr('name'),
+                        page = $('#current-page').val(),
+                        sub_btn = $('.sub-end'),
+                        total_qtn = ajax_xhr();
+
+                    if (data_attr === 'next') {
+
+                        page = parseInt(page) + 1;
+                        //p_test = page
+                        p_test = (page >= total_qtn) ? total_qtn : page;
+
+                        if (page >= total_qtn) {
+
+                            $(this).addClass('disabled');
+
+                        }
+                        $('#prevBtn').removeClass('disabled');
+                        $(this).attr('page', p_test);
+                        $('#current-page').val(p_test);
+
+
+                    } else if (data_attr === 'prev') {
+
+                        var cin = parseInt(total_qtn);
+
+                        if (parseInt(page) === 1 ) {
+
+                            $('#prevBtn').addClass('disabled');
+                        }
+                        $('#nextBtn').removeClass('disabled');
+                        page = parseInt(page) - 1;
+                        p_test = (page < 0) ? 0 : page;
+                        $(this).attr('page', page);
+                        $('#current-page').val(p_test);
+
+                    }
+
+                    question_load(p_test);
+                    return false;
+                });
+
+
+        question_load(0);
+
+    });
+
+
+
+    function question_load(p) {
+        //var _dx = document.getElementbyId('current-page');
+        $('#get_question')
+        .html('<center><img src="loading-gif-animation.gif" border="0" /></center>');
+
+        var loader = '<img src="<?php print _PHOTO_ ?>/loader-animator.gif" border="0" />';
+        $('#A')
+                .fadeIn('slow')
+                .html(loader);
+
+        $('#B')
+                .fadeIn('slow')
+                .html(loader);
+
+        $('#C')
+                .fadeIn('slow')
+                .html(loader);
+
+        $('#D')
+                .fadeIn('slow')
+                .html(loader);
+
+            _a = [{
+               "id": "1",
+               "subject": "Web Technologies",
+               "user": "12/69/0191",
+
+            }];
+            var d = JSON.parse(_a),
+                _js = ((json_answer()[p]) === undefined ) ? ' ' : json_answer()[p],
+                _cpage = $('#current-page').val(),
+                a = d[p],
+                q_id = a.id,
+                sub  = a.subject,
+                user = a.user,
+                _v    = parseInt(_cpage) + 1;
+
+               $('#get_question').html('('+ (_v) +') '+a.question);
+               $('#subject').val(sub);
+               $('.qID').val(q_id);
+               //alert(ans);
+
+              $('.myoption')
+              .html('<li class="list-group-item"><label for="optionA" class="sizer"> <div class="pull-left">(A)<input type="radio" name="option" value="A" id="optionA" checked /></div><div class="pull-right"> &nbsp;stuff here</div><br class="clearAll"/></label></li>');
+
+              $('.pager')
+              .load('<?=LAYOUT?>/pager.php?qID=' + _v + '&subject=' + sub + '&id='+q_id);
+
+
+    }
+
+
+
+</script>
+
+<body style="overflow-x: hidden;">
+
+    <div class="container wrap-it-all">
+        <!--  logo here -->
+        <div class="col-md-2">
+            <br> <br/><br/>
+        </div>
+        <!--  end logo here -->
+        <!--  Duration & timer -->
+        <div class="col-md-10" >
+
+            <!--  timer here -->
+            <div class="pull-left" id="font-select">
+
+                <input type="text" id="hh" value="00" class="timer" name="hh"/>&nbsp;: &nbsp;
+                 <input type="text" id="mm" value="00" class="timer"/>&nbsp;:&nbsp; <input type="text" id="ss" value="00" class="timer" />
+
+
+            </div>
+            <!-- end timer -->
+            <!-- signout -->
+            <div class="pull-right">
+
+
+                <a href="#" class="btn btn-lg btn-danger sub-end" id="signout_power"
+                type="submit" name="next"
+                title="By clicking on this button shows that you have finally submited">
+                <i class="fa fa-power-off"></i> <u>S</u>ubmit </a>
+
+
+            </div>
+            <!--  end signout -->
+        </div>
+        <!-- end Duration & timer -->
+        <div class="clearfix"></div>
+
+        <div class="houserent-show" >
+            <div class="alert alert-success" role="alert" style="border:5px solid #000 !important;padding: 0px !important;width: 100%;">
+                <div class="alert alert-success" role="alert" style="margin: 0px !important;width: 100%;border: 0px solid #ccc;
+                     border-radius: 0px;">
+                    <ul class="nav nav-tabs" style="background: transparent !important;font-weight: bold;">
+                        <li role="presentation" class="active">
+                            <a href="#" style="cursor: pointer" id="signout_power">
+
+                                <span class=""><b><i class="fa fa-cogs"></i>
+                                        Course/ Subject :&nbsp; <?php print str_replace('_', ' ', ucfirst($subject))?></b></span>
+
+                            </a>
+
+                        </li>
+
+                        <li style="padding-top: 10px;margin-left: 5px;">
+                            <span style="padding: 5px;color: #8a6d3b;" class="small">
+                                Login As : <i class="fa fa-user"></i> <?php print $matric; ?>
+                            </span>
+                        </li>
+
+                    </ul>
+                </div>
+                <br/>
+
+                <!-- Question board -->
+                <div class="col-md-6 grey question_design">
+                    <h5 id="get_question"></h5>
+                </div>
+                <!--  end question board -->
+                <!--  options -->
+                <div class="col-md-6">
+                    <ul class="list-group">
+                        <input type="hidden" name="question" id="question" class="qID"/>
+                         <input type="hidden" name="subject" id="subject" class="sub"/>
+                        <div class="myoption"></div>
+                    </ul>
+                </div>
+                <!-- end options -->
+
+                <div class="clearfix"></div>
+
+                <!--  pagination -->
+                <div class="col-md-8" id="border" style="border-bottom: 2px solid #ccc;height: 80px;overflow: auto;">
+                    <ul class="pager">
+
+                    </ul>
+                </div>
+                <!-- end pagination -->
+
+                <!-- Navigation -->
+                <!--
+                  These are button for the program navigations
+                -->
+                <div class="btn-area" class="col-md-7">
+
+                    <button class="btn btn-lg btn-primary btn-block" id="btn-custom" type="submit" style="display: none !important;width: 20% !important">&nbsp; &nbsp;&nbsp;</button> &nbsp;&nbsp;
+
+<a href="#" class="btn btn-lg btn-success prev btn-block disabled"  id="prevBtn"
+            style="display: inline !important;width: 30% !important;" name="prev"><i class='fa fa-arrow-circle-left'></i> <u>P</u>revious &nbsp;</a> &nbsp;
+
+<a href="#" class="btn btn-lg btn-success btn-block next" id="nextBtn" type="submit" style="display: inline;width: 30% !important;" name="next" ><u>N</u>ext <i class='fa fa-arrow-circle-right'></i></a>
+
+&nbsp;
+
+                    <input type="hidden" name="current-page" id="current-page" value="0"/>
+                </div>
+                <!-- end Navigation
+                  Program navigations
+                -->
+
+                <div class="clearfix">&nbsp;
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+  <div class="animated" id="notify">
+    <div class="innerBox">
+    <div class="closex">
+    <a href="#" class="close clickx">close <i class="fa fa-times"></i></a></div>
+    <h3><i class="fa fa-info"></i> You have less than 10 Minutes.</h3>
+    </div>
+  </div>
